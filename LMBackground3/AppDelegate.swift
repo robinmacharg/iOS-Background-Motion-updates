@@ -196,6 +196,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func updateMotionInterval(_ interval: Double) {
+        requestURL("updateInterval=\(interval)")
         motionManager.gyroUpdateInterval = interval
         motionManager.accelerometerUpdateInterval = interval
         motionManager.deviceMotionUpdateInterval = interval

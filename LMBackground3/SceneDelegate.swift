@@ -20,6 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
+        appDelegate().updateMotionInterval(10)
         requestURL("RESIGN_ACTIVE")
     }
 
