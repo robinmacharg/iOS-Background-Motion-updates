@@ -70,9 +70,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         locationManager.requestAlwaysAuthorization()
+
         // Disable this next line to turn off ALL background location/motion updates.
         locationManager.allowsBackgroundLocationUpdates = true
+
+        // Crank down the GPS accuracy to prevent (frequent) location updates
+        // Disable the next two lines to see location updates.
+        // https://stackoverflow.com/a/19085518/2431627
+        locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
+        locationManager.distanceFilter = 99999
+        
         locationManager.startUpdatingLocation()
+        locationManager.delegate = self
         
         requestURL("DID_FINISH_LAUNCHING")
         
@@ -83,5 +92,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+}
+
+extension AppDelegate: CLLocationManagerDelegate {
+    func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {
+        requestURL("DidPauseLocationUpdates")
+    }
+    
+    func locationManagerDidResumeLocationUpdates(_ manager: CLLocationManager) {
+        requestURL("DidResumeLocationUpdates")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        requestURL("didUpdateLocations")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        requestURL("didFail: \(error.localizedDescription)")
     }
 }
