@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         
         // That warm feeling
-        label.text = "Running"
+        label.text = "App Running"
         
         motionManager.gyroUpdateInterval = 1.0
         motionManager.accelerometerUpdateInterval = 1.0

@@ -13,9 +13,9 @@ import CoreLocation
  Usage:
  
  Add "Background Modes" capability with Location Updates (and Background Fetch to see
- requests that prove the app is runnning)
+ local HTTP requests that prove the app is runnning)
  
- Add the following keys to the Info.plist with suitable descriptiuons:
+ Add the following keys to the Info.plist with suitable descriptions:
  
      Privacy - Location Always and When in Use Usage Description
      Privacy - Location When in Use Usage Description
@@ -56,7 +56,6 @@ func BG(_ block: @escaping ()->Void) {
 func UI(_ block: @escaping ()->Void) {
     DispatchQueue.main.async(execute: block)
 }
-
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
