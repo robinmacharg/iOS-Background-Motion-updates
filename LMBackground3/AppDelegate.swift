@@ -40,8 +40,13 @@ func requestURL(_ arg: String) {
         let url = URL(string: "http://\(LOCAL_IP):8000/?\(param)")!
 
         let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
-            guard let data = data else { return }
-            print("Got data at \(Date())")
+            if data != nil {
+                print("Got data at \(Date())")
+            }
+            else {
+                print("No data.  Webserver not running?")
+                return
+            }
         }
 
         task.resume()

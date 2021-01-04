@@ -33,7 +33,7 @@ class ViewController: UIViewController {
         if motionManager.isAccelerometerAvailable {
             requestURL("STARTING_ACCEL")
             motionManager.startAccelerometerUpdates(to: OperationQueue.main) { (data, error) in
-                print(data)
+                print(data as Any)
                 requestURL("accel")
                 AudioServicesPlaySystemSound(1103)
             }
@@ -42,7 +42,7 @@ class ViewController: UIViewController {
         if motionManager.isMagnetometerAvailable {
             requestURL("STARTING_MAG")
             motionManager.startMagnetometerUpdates(to: OperationQueue.main) { (data, error) in
-                print(data)
+                print(data as Any)
                 requestURL("mag")
                 AudioServicesPlaySystemSound(1103)
             }
@@ -51,7 +51,7 @@ class ViewController: UIViewController {
         if motionManager.isGyroAvailable {
             requestURL("STARTING_GYRO")
             motionManager.startGyroUpdates(to: OperationQueue.main) { (data, error) in
-                print(data)
+                print(data as Any)
                 requestURL("gyro")
                 AudioServicesPlaySystemSound(1103)
             }
@@ -60,7 +60,7 @@ class ViewController: UIViewController {
         if motionManager.isDeviceMotionAvailable {
             requestURL("STARTING_DEVICE")
             motionManager.startDeviceMotionUpdates(to: OperationQueue.main) { (data, error) in
-                print(data)
+                print(data as Any)
                 requestURL("device")
                 AudioServicesPlaySystemSound(1103)
             }
@@ -84,7 +84,7 @@ class ViewController: UIViewController {
                         activities = "none"
                     }
                                         
-                    var confidence =
+                    let confidence =
                         (motion!.confidence == .low ? "low" :
                         motion!.confidence == .medium ? "medium" :
                         motion!.confidence == .high ? "high" :
