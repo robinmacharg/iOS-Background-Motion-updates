@@ -1,0 +1,6 @@
+framework module Pods_LMBackground3 {
+  umbrella header "Pods-LMBackground3-umbrella.h"
+
+  export *
+  module * { export * }
+}

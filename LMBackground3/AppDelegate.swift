@@ -7,10 +7,16 @@
 
 import UIKit
 import CoreLocation
+import CoreMotion
+import AVKit
 
 /*
 
- Usage:
+ Uses Cocoapods:
+ 
+     $ pod install
+ 
+ Then open the workspace.
  
  Add "Background Modes" capability with Location Updates (and Background Fetch to see
  local HTTP requests that prove the app is runnning)
@@ -25,19 +31,35 @@ import CoreLocation
 
     $ python -m SimpleHTTPServer 8000
 
- Enable requests by toggling REQUESTS_ENABLED, below.  Change the IP to your development machine's.
+ Enable requests by toggling REQUESTS_ENABLED, below.  Change the IP to that of your development machine.
+ 
+ The FLEX in-app debugger is available for e.g. untethered log viewing.
  
  */
 
-// Should we send diagnostic HTTP requests
+/**
+ * CONSTANTS
+ */
+
+// Should we send diagnostic HTTP requests?
 let REQUESTS_ENABLED = true
 
 // The webserver address
 let LOCAL_IP = "192.168.1.123"
 
 // Whether to print diagnostic messages to the console.
-let LOGGING_ENABLED = false
+let LOGGING_ENABLED = true
+
+// How frequently to update location/motion in seconds
+let UPDATE_INTERVAL = 10.0
  
+// Should we play a sound when a background motion event is received?
+let PLAY_SOUND = true
+
+/**
+ * GLOBAL HELPER FUNCTIONS
+ */
+
 // Helper function to issue a simple HTTP request.
 // Allows validation of functionality when not connected to a debugger.
 func requestURL(_ arg: String) {
@@ -61,7 +83,7 @@ func requestURL(_ arg: String) {
 
 func log(_ value: Any) {
     if LOGGING_ENABLED {
-        print(value)
+        NSLog("BGMOTION: \(value)")
     }
 }
 
@@ -74,13 +96,38 @@ func UI(_ block: @escaping ()->Void) {
     DispatchQueue.main.async(execute: block)
 }
 
+func appDelegate() -> AppDelegate {
+    return UIApplication.shared.delegate as! AppDelegate
+}
+
+/**
+ * APP DELEGATE
+ */
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     let locationManager = CLLocationManager()
-
+    let motionManager = CMMotionManager()
+    let motionActivityManager = CMMotionActivityManager()
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
+        setupLocationManager()
+        setupMotionManager(updateInterval: UPDATE_INTERVAL)
+        
+        requestURL("DID_FINISH_LAUNCHING")
+        
+        return true
+    }
+
+    // MARK: UISceneSession Lifecycle
+
+    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    }
+    
+    private func setupLocationManager() {
         locationManager.requestAlwaysAuthorization()
 
         // Disable this next line to turn off ALL background location/motion updates.
@@ -95,18 +142,68 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         locationManager.startUpdatingLocation()
         locationManager.delegate = self
-        
-        requestURL("DID_FINISH_LAUNCHING")
-        
-        return true
     }
+    
+    private func setupMotionManager(updateInterval: Double) {
+        motionManager.stopGyroUpdates()
+        motionManager.stopMagnetometerUpdates()
+        motionManager.stopAccelerometerUpdates()
+        motionManager.stopDeviceMotionUpdates()
+        
+        updateMotionInterval(updateInterval)
+        
+        if motionManager.isAccelerometerAvailable {
+            requestURL("STARTING_ACCEL")
+            motionManager.startAccelerometerUpdates(to: OperationQueue.main) { (data, error) in
+                log(data as Any)
+                requestURL("accel")
+                self.playSound()
+            }
+        }
 
-    // MARK: UISceneSession Lifecycle
-
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+        if motionManager.isMagnetometerAvailable {
+            requestURL("STARTING_MAG")
+            motionManager.startMagnetometerUpdates(to: OperationQueue.main) { (data, error) in
+                log(data as Any)
+                requestURL("mag")
+                self.playSound()
+            }
+        }
+        
+        if motionManager.isGyroAvailable {
+            requestURL("STARTING_GYRO")
+            motionManager.startGyroUpdates(to: OperationQueue.main) { (data, error) in
+                log(data as Any)
+                requestURL("gyro")
+                self.playSound()
+            }
+        }
+        
+        if motionManager.isDeviceMotionAvailable {
+            requestURL("STARTING_DEVICE")
+            motionManager.startDeviceMotionUpdates(to: OperationQueue.main) { (data, error) in
+                log(data as Any)
+                requestURL("device")
+                self.playSound()
+            }
+        }
+    }
+    
+    private func playSound() {
+        if PLAY_SOUND {
+            AudioServicesPlaySystemSound(1103)
+        }
+    }
+    
+    func updateMotionInterval(_ interval: Double) {
+        motionManager.gyroUpdateInterval = interval
+        motionManager.accelerometerUpdateInterval = interval
+        motionManager.deviceMotionUpdateInterval = interval
+        motionManager.magnetometerUpdateInterval = interval
     }
 }
+
+// MARK: - Location Lifecycle
 
 extension AppDelegate: CLLocationManagerDelegate {
     func locationManagerDidPauseLocationUpdates(_ manager: CLLocationManager) {

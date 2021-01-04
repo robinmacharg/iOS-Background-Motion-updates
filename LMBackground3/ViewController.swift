@@ -7,15 +7,13 @@
 
 import UIKit
 import CoreMotion
-import AVKit
+import FLEX
 
 class ViewController: UIViewController {
 
     @IBOutlet weak var label: UILabel!
-    
-    let motionManager = CMMotionManager()
+
     let motionActivityManager = CMMotionActivityManager()
-    
      
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,54 +21,12 @@ class ViewController: UIViewController {
         // That warm feeling
         label.text = "App Running"
         
-        motionManager.gyroUpdateInterval = 1.0
-        motionManager.accelerometerUpdateInterval = 1.0
-        motionManager.deviceMotionUpdateInterval = 1.0
-        motionManager.magnetometerUpdateInterval = 1.0
-        
-        // Basic CoreMotion
-        
-        if motionManager.isAccelerometerAvailable {
-            requestURL("STARTING_ACCEL")
-            motionManager.startAccelerometerUpdates(to: OperationQueue.main) { (data, error) in
-                log(data as Any)
-                requestURL("accel")
-                AudioServicesPlaySystemSound(1103)
-            }
-        }
-
-        if motionManager.isMagnetometerAvailable {
-            requestURL("STARTING_MAG")
-            motionManager.startMagnetometerUpdates(to: OperationQueue.main) { (data, error) in
-                log(data as Any)
-                requestURL("mag")
-                AudioServicesPlaySystemSound(1103)
-            }
-        }
-        
-        if motionManager.isGyroAvailable {
-            requestURL("STARTING_GYRO")
-            motionManager.startGyroUpdates(to: OperationQueue.main) { (data, error) in
-                log(data as Any)
-                requestURL("gyro")
-                AudioServicesPlaySystemSound(1103)
-            }
-        }
-        
-        if motionManager.isDeviceMotionAvailable {
-            requestURL("STARTING_DEVICE")
-            motionManager.startDeviceMotionUpdates(to: OperationQueue.main) { (data, error) in
-                log(data as Any)
-                requestURL("device")
-                AudioServicesPlaySystemSound(1103)
-            }
-        }
-        
         // Activity
         
-        if CMMotionActivityManager.isActivityAvailable() {
-            self.motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
+        if  CMMotionActivityManager.isActivityAvailable() {
+            appDelegate().motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
                 if motion != nil {
+                    // It's possible to have > 1 value, e.g. automotive AND stationary (e.g. at lights)
                     var activities = [
                         motion!.unknown ? "unknown" : nil,
                         motion!.stationary ? "stationary" : nil,
@@ -90,7 +46,6 @@ class ViewController: UIViewController {
                         motion!.confidence == .high ? "high" :
                         "unknown")
                     
-                    
                     UI() {
                         self.label.text = activities.capitalized
                     }
@@ -99,7 +54,25 @@ class ViewController: UIViewController {
                 }
             }
         }
-        
+    }
+    
+    // Start the FLEX in-app debugger
+    // Note: Disable os_log in FLEX's System Log Settings and filter on BGMOTION for a saner experience
+    @IBAction func startFLEX(_ sender: Any) {
+        FLEXManager.shared.showExplorer()
+    }
+    
+    // Lazy UI
+    @IBAction func changeInterval1s(_ sender: Any) {
+        appDelegate().updateMotionInterval(1)
+    }
+    
+    @IBAction func changeInterval5s(_ sender: Any) {
+        appDelegate().updateMotionInterval(5)
+    }
+    
+    @IBAction func changeInterval10s(_ sender: Any) {
+        appDelegate().updateMotionInterval(10)
     }
 }
 
