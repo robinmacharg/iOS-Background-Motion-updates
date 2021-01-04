@@ -16,18 +16,87 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7uS-6S-XK0">
-                                <rect key="frame" x="186.5" y="437.5" width="41.5" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Activity" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7uS-6S-XK0">
+                                <rect key="frame" x="337" y="73" width="57" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="m8D-p0-ODY">
+                                <rect key="frame" x="328" y="832" width="66" height="30"/>
+                                <state key="normal" title="Start Flex"/>
+                                <connections>
+                                    <action selector="startFLEX:" destination="BYZ-38-t0r" eventType="touchUpInside" id="2YZ-ez-Op6"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="I think you are:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UGI-Ys-bcW">
+                                <rect key="frame" x="20" y="73" width="111" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Background Location/Motion Demo" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bZJ-EC-NiW">
+                                <rect key="frame" x="73" y="44" width="268" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Update Interval:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rpe-ms-Xgy">
+                                <rect key="frame" x="20" y="102" width="121" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IuG-An-SWR">
+                                <rect key="frame" x="192" y="131" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="rF5-gK-xzB"/>
+                                </constraints>
+                                <state key="normal" title="5s"/>
+                                <connections>
+                                    <action selector="changeInterval5s:" destination="BYZ-38-t0r" eventType="touchUpInside" id="e2s-Jk-lQv"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ROl-4U-f1F">
+                                <rect key="frame" x="364" y="131" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="JiR-pd-NG5"/>
+                                </constraints>
+                                <state key="normal" title="10s"/>
+                                <connections>
+                                    <action selector="changeInterval10s:" destination="BYZ-38-t0r" eventType="touchUpInside" id="jyz-lo-9Z2"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="are-qw-mMu">
+                                <rect key="frame" x="28" y="131" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="bxu-CH-YPn"/>
+                                </constraints>
+                                <state key="normal" title="1s"/>
+                                <connections>
+                                    <action selector="changeInterval1s:" destination="BYZ-38-t0r" eventType="touchUpInside" id="IUB-as-714"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="7uS-6S-XK0" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ABg-jA-pJy"/>
-                            <constraint firstItem="7uS-6S-XK0" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="qTW-Vw-RAI"/>
+                            <constraint firstItem="ROl-4U-f1F" firstAttribute="centerY" secondItem="are-qw-mMu" secondAttribute="centerY" id="00w-Hh-Lgg"/>
+                            <constraint firstItem="IuG-An-SWR" firstAttribute="centerY" secondItem="are-qw-mMu" secondAttribute="centerY" id="DXs-6a-I9V"/>
+                            <constraint firstItem="are-qw-mMu" firstAttribute="top" secondItem="rpe-ms-Xgy" secondAttribute="bottom" constant="8" symbolic="YES" id="PpJ-Er-oj7"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="7uS-6S-XK0" secondAttribute="trailing" constant="20" id="Qa2-BX-5DJ"/>
+                            <constraint firstItem="are-qw-mMu" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="28" id="RPz-OY-bpe"/>
+                            <constraint firstItem="bZJ-EC-NiW" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="TaL-Bg-LEs"/>
+                            <constraint firstItem="7uS-6S-XK0" firstAttribute="centerY" secondItem="UGI-Ys-bcW" secondAttribute="centerY" id="U0R-DN-0es"/>
+                            <constraint firstItem="UGI-Ys-bcW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="Z4v-re-dff"/>
+                            <constraint firstItem="UGI-Ys-bcW" firstAttribute="top" secondItem="bZJ-EC-NiW" secondAttribute="bottom" constant="8" symbolic="YES" id="ZaJ-fp-TE3"/>
+                            <constraint firstItem="IuG-An-SWR" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="gGL-4h-bLz"/>
+                            <constraint firstItem="rpe-ms-Xgy" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="k4b-c7-DtS"/>
+                            <constraint firstItem="bZJ-EC-NiW" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="lyL-Fo-5Tf"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="ROl-4U-f1F" secondAttribute="trailing" constant="20" id="mD2-Lc-aLz"/>
+                            <constraint firstItem="m8D-p0-ODY" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="oeL-9x-euh"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="m8D-p0-ODY" secondAttribute="trailing" constant="20" id="viU-CK-5qT"/>
+                            <constraint firstItem="rpe-ms-Xgy" firstAttribute="top" secondItem="UGI-Ys-bcW" secondAttribute="bottom" constant="8" symbolic="YES" id="xl1-nB-yjv"/>
                         </constraints>
                     </view>
                     <connections>
