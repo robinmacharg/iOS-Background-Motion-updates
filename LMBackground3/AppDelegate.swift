@@ -48,6 +48,15 @@ func requestURL(_ arg: String) {
     }
 }
 
+// https://www.electrollama.net/blog/2017/1/6/updating-ui-from-background-threads-simple-threading-in-swift-3-for-ios
+func BG(_ block: @escaping ()->Void) {
+    DispatchQueue.global(qos: .default).async(execute: block)
+}
+
+func UI(_ block: @escaping ()->Void) {
+    DispatchQueue.main.async(execute: block)
+}
+
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -57,6 +66,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         locationManager.requestAlwaysAuthorization()
+        // Disable this next line to turn off ALL background location/motion updates.
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.startUpdatingLocation()
         

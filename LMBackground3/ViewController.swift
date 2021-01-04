@@ -90,6 +90,11 @@ class ViewController: UIViewController {
                         motion!.confidence == .high ? "high" :
                         "unknown")
                     
+                    
+                    UI() {
+                        self.label.text = activities.capitalized
+                    }
+                    
                     requestURL("activities=\(activities)&confidence=\(confidence)")
                 }
             }
