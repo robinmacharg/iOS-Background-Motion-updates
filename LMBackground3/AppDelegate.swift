@@ -29,8 +29,14 @@ import CoreLocation
  
  */
 
+// Should we send diagnostic HTTP requests
 let REQUESTS_ENABLED = true
+
+// The webserver address
 let LOCAL_IP = "192.168.1.123"
+
+// Whether to print diagnostic messages to the console.
+let LOGGING_ENABLED = false
  
 // Helper function to issue a simple HTTP request.
 // Allows validation of functionality when not connected to a debugger.
@@ -41,7 +47,7 @@ func requestURL(_ arg: String) {
 
         let task = URLSession.shared.dataTask(with: url) {(data, response, error) in
             if data != nil {
-                print("Got data at \(Date())")
+                log("Got data at \(Date())")
             }
             else {
                 print("No data.  Webserver not running?")
@@ -50,6 +56,12 @@ func requestURL(_ arg: String) {
         }
 
         task.resume()
+    }
+}
+
+func log(_ value: Any) {
+    if LOGGING_ENABLED {
+        print(value)
     }
 }
 
@@ -76,6 +88,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Crank down the GPS accuracy to prevent (frequent) location updates
         // Disable the next two lines to see location updates.
+        // GPS energy usage is visible in the Energy Log instrument
         // https://stackoverflow.com/a/19085518/2431627
         locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
         locationManager.distanceFilter = 99999
