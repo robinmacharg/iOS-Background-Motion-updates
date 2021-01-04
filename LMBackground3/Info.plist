@@ -24,6 +24,8 @@
 	<string>LOCATION ALWAYS AND WHEN IN USE</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>LOCATION WHEN IN USE</string>
+	<key>NSMotionUsageDescription</key>
+	<string>MOTION USAGE</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

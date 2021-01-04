@@ -19,6 +19,7 @@ import CoreLocation
  
      Privacy - Location Always and When in Use Usage Description
      Privacy - Location When in Use Usage Description
+     Privacy - Motion Usage Description
 
  Start a simple webserver with (Python 2):
 
