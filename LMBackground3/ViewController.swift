@@ -30,7 +30,7 @@ class ViewController: UIViewController {
         
         // Basic CoreMotion
         
-        if motionManager.isAccelerometerActive {
+        if motionManager.isAccelerometerAvailable {
             requestURL("STARTING_ACCEL")
             motionManager.startAccelerometerUpdates(to: OperationQueue.main) { (data, error) in
                 print(data)
@@ -39,7 +39,8 @@ class ViewController: UIViewController {
             }
         }
 
-        if motionManager.isMagnetometerActive {
+        if motionManager.isMagnetometerAvailable {
+            requestURL("STARTING_MAG")
             motionManager.startMagnetometerUpdates(to: OperationQueue.main) { (data, error) in
                 print(data)
                 requestURL("mag")
@@ -48,6 +49,7 @@ class ViewController: UIViewController {
         }
         
         if motionManager.isGyroAvailable {
+            requestURL("STARTING_GYRO")
             motionManager.startGyroUpdates(to: OperationQueue.main) { (data, error) in
                 print(data)
                 requestURL("gyro")
@@ -56,6 +58,7 @@ class ViewController: UIViewController {
         }
         
         if motionManager.isDeviceMotionAvailable {
+            requestURL("STARTING_DEVICE")
             motionManager.startDeviceMotionUpdates(to: OperationQueue.main) { (data, error) in
                 print(data)
                 requestURL("device")
@@ -68,7 +71,7 @@ class ViewController: UIViewController {
         if CMMotionActivityManager.isActivityAvailable() {
             self.motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
                 if motion != nil {
-                    var activities = "motion=" + [
+                    var activities = [
                         motion!.unknown ? "unknown" : nil,
                         motion!.stationary ? "stationary" : nil,
                         motion!.walking ? "walking" : nil,
@@ -77,13 +80,17 @@ class ViewController: UIViewController {
                         motion!.automotive ? "driving" : nil
                     ].compactMap({$0}).joined(separator: ",")
                     
-                    var confidence = "confidence=" +
+                    if activities == "" {
+                        activities = "none"
+                    }
+                                        
+                    var confidence =
                         (motion!.confidence == .low ? "low" :
                         motion!.confidence == .medium ? "medium" :
                         motion!.confidence == .high ? "high" :
                         "unknown")
                     
-                    requestURL("\(activities)&\(confidence)")
+                    requestURL("activities=\(activities)&confidence=\(confidence)")
                 }
             }
         }

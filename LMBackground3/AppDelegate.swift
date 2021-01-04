@@ -32,6 +32,8 @@ import CoreLocation
 let REQUESTS_ENABLED = true
 let LOCAL_IP = "192.168.1.123"
  
+// Helper function to issue a simple HTTP request.
+// Allows validation of functionality when not connected to a debugger.
 func requestURL(_ arg: String) {
     if REQUESTS_ENABLED {
         let param = arg.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
@@ -57,9 +59,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         locationManager.requestAlwaysAuthorization()
         locationManager.allowsBackgroundLocationUpdates = true
         locationManager.startUpdatingLocation()
-        locationManager.delegate = self
         
-        requestURL("DID FINISH LAUNCHING")
+        requestURL("DID_FINISH_LAUNCHING")
         
         return true
     }
@@ -69,7 +70,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
-}
-
-extension AppDelegate: CLLocationManagerDelegate {
 }
