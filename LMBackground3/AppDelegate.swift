@@ -57,7 +57,7 @@ let REQUESTS_ENABLED = true
 let LOCAL_IP = "192.168.1.123"
 
 // Whether to print diagnostic messages to the console.
-let LOGGING_ENABLED = true
+let LOGGING_ENABLED = false
 
 // How frequently to update location/motion in seconds
 let UPDATE_INTERVAL = 10.0
@@ -180,6 +180,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func startLocationUpdates() {
         locationManager.startUpdatingLocation()
+        locationManager.startUpdatingHeading()
     }
     
     private func startMotionUpdates() {
@@ -340,5 +341,9 @@ extension AppDelegate: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         requestURL("didFail: \(error.localizedDescription)")
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        requestURL("didUpdateHeading")
     }
 }
