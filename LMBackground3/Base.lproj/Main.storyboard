@@ -77,16 +77,33 @@
                                     <action selector="changeInterval1s:" destination="BYZ-38-t0r" eventType="touchUpInside" id="IUB-as-714"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QLd-CC-dlK">
+                                <rect key="frame" x="20" y="832" width="157" height="30"/>
+                                <state key="normal" title="Stop Location Updates"/>
+                                <connections>
+                                    <action selector="stopLocationUpdates:" destination="BYZ-38-t0r" eventType="touchUpInside" id="6Mc-OG-xWp"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fgg-vH-RLE">
+                                <rect key="frame" x="20" y="794" width="159" height="30"/>
+                                <state key="normal" title="Start Location Updates"/>
+                                <connections>
+                                    <action selector="startLocationUpdates:" destination="BYZ-38-t0r" eventType="touchUpInside" id="OOF-pR-JHj"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="ROl-4U-f1F" firstAttribute="centerY" secondItem="are-qw-mMu" secondAttribute="centerY" id="00w-Hh-Lgg"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="QLd-CC-dlK" secondAttribute="bottom" id="1mM-MN-a2J"/>
+                            <constraint firstItem="Fgg-vH-RLE" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="6GE-AP-FIU"/>
                             <constraint firstItem="IuG-An-SWR" firstAttribute="centerY" secondItem="are-qw-mMu" secondAttribute="centerY" id="DXs-6a-I9V"/>
                             <constraint firstItem="are-qw-mMu" firstAttribute="top" secondItem="rpe-ms-Xgy" secondAttribute="bottom" constant="8" symbolic="YES" id="PpJ-Er-oj7"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="7uS-6S-XK0" secondAttribute="trailing" constant="20" id="Qa2-BX-5DJ"/>
                             <constraint firstItem="are-qw-mMu" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="28" id="RPz-OY-bpe"/>
                             <constraint firstItem="bZJ-EC-NiW" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="TaL-Bg-LEs"/>
+                            <constraint firstItem="QLd-CC-dlK" firstAttribute="top" secondItem="Fgg-vH-RLE" secondAttribute="bottom" constant="8" id="ThC-j8-tTw"/>
                             <constraint firstItem="7uS-6S-XK0" firstAttribute="centerY" secondItem="UGI-Ys-bcW" secondAttribute="centerY" id="U0R-DN-0es"/>
                             <constraint firstItem="UGI-Ys-bcW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="Z4v-re-dff"/>
                             <constraint firstItem="UGI-Ys-bcW" firstAttribute="top" secondItem="bZJ-EC-NiW" secondAttribute="bottom" constant="8" symbolic="YES" id="ZaJ-fp-TE3"/>
@@ -97,6 +114,7 @@
                             <constraint firstItem="m8D-p0-ODY" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="oeL-9x-euh"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="m8D-p0-ODY" secondAttribute="trailing" constant="20" id="viU-CK-5qT"/>
                             <constraint firstItem="rpe-ms-Xgy" firstAttribute="top" secondItem="UGI-Ys-bcW" secondAttribute="bottom" constant="8" symbolic="YES" id="xl1-nB-yjv"/>
+                            <constraint firstItem="QLd-CC-dlK" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="yCQ-3C-stV"/>
                         </constraints>
                     </view>
                     <connections>

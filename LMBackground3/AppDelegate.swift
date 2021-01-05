@@ -12,6 +12,8 @@ import AVKit
 
 /*
 
+ Proof of Concept iOS app demonstrating persistent background Core Motion updates.
+ 
  Uses Cocoapods:
  
      $ pod install
@@ -37,10 +39,11 @@ import AVKit
  
  Useful background:
  
- https://stackoverflow.com/questions/20083032/coremotion-updates-in-background-state
- https://stackoverflow.com/questions/19216169/cmmotionactivitymanager-receiving-motion-activity-updates-while-app-is-suspend?rq=1
- https://stackoverflow.com/questions/19042894/periodic-ios-background-location-updates/19085518#19085518
- https://stackoverflow.com/questions/20766139/iphone-collecting-coremotion-data-in-the-background-longer-than-10-mins
+ - https://stackoverflow.com/questions/20083032/coremotion-updates-in-background-state
+ - https://stackoverflow.com/questions/19216169/cmmotionactivitymanager-receiving-motion-activity-updates-while-app-is-suspend?rq=1
+ - https://stackoverflow.com/questions/19042894/periodic-ios-background-location-updates/19085518#19085518
+ - https://stackoverflow.com/questions/20766139/iphone-collecting-coremotion-data-in-the-background-longer-than-10-mins
+ 
  */
 
 /**
@@ -93,6 +96,7 @@ func log(_ value: Any) {
     }
 }
 
+// Simple global main/bg thread block execution
 // https://www.electrollama.net/blog/2017/1/6/updating-ui-from-background-threads-simple-threading-in-swift-3-for-ios
 func BG(_ block: @escaping ()->Void) {
     DispatchQueue.global(qos: .default).async(execute: block)
@@ -102,6 +106,7 @@ func UI(_ block: @escaping ()->Void) {
     DispatchQueue.main.async(execute: block)
 }
 
+// Global access to the app delegate, for convenience.  Could be any root controller.
 func appDelegate() -> AppDelegate {
     return UIApplication.shared.delegate as! AppDelegate
 }
@@ -116,19 +121,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let locationManager = CLLocationManager()
     let motionManager = CMMotionManager()
     let motionActivityManager = CMMotionActivityManager()
+    var activityUIDelegate: ActivityUIDelegate?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        stopUpdates()
         
         setupLocationManager()
         setupMotionManager(updateInterval: UPDATE_INTERVAL)
         setupLifecycleNotifications()
         
+        startUpdates()
+        
         requestURL("DID_FINISH_LAUNCHING")
         
         return true
     }
-
-    // MARK: UISceneSession Lifecycle
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
@@ -142,23 +150,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         // Crank down the GPS accuracy to prevent (frequent) location updates
         // Disable the next two lines to see location updates.
-        // GPS energy usage is visible in the Energy Log instrument
+        // GPS energy usage is visible in the Energy Log Instrument
         // https://stackoverflow.com/a/19085518/2431627
         locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
         locationManager.distanceFilter = 99999
-        
-        locationManager.startUpdatingLocation()
         locationManager.delegate = self
     }
     
     private func setupMotionManager(updateInterval: Double) {
+        updateMotionInterval(updateInterval)
+    }
+    
+    func stopUpdates() {
+        locationManager.stopUpdatingLocation()
         motionManager.stopGyroUpdates()
         motionManager.stopMagnetometerUpdates()
         motionManager.stopAccelerometerUpdates()
         motionManager.stopDeviceMotionUpdates()
-        
-        updateMotionInterval(updateInterval)
-        
+        motionActivityManager.stopActivityUpdates()
+        requestURL("LOCATION_UPDATES_STOPPED")
+    }
+    
+    func startUpdates() {
+        stopUpdates() // Ensure we don't register twice
+        startLocationUpdates()
+        startMotionUpdates()
+        startActivityUpdates()
+    }
+    
+    private func startLocationUpdates() {
+        locationManager.startUpdatingLocation()
+    }
+    
+    private func startMotionUpdates() {
         if motionManager.isAccelerometerAvailable {
             requestURL("STARTING_ACCEL")
             motionManager.startAccelerometerUpdates(to: OperationQueue.main) { (data, error) in
@@ -192,6 +216,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 log(data as Any)
                 requestURL("device")
                 self.playSound()
+            }
+        }
+    }
+    
+    private func startActivityUpdates() {
+        if  CMMotionActivityManager.isActivityAvailable() {
+            self.motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
+                if motion != nil {
+                    // It's possible to have > 1 value, e.g. automotive AND stationary (e.g. at lights)
+                    var activities = [
+                        motion!.unknown ? "unknown" : nil,
+                        motion!.stationary ? "stationary" : nil,
+                        motion!.walking ? "walking" : nil,
+                        motion!.running ? "running" : nil,
+                        motion!.cycling ? "cycling" : nil,
+                        motion!.automotive ? "driving" : nil
+                    ].compactMap({$0}).joined(separator: ",")
+                    
+                    // It's also possible that the phone can't determine what you're doing, e.g. maybe
+                    // just picking the phone up.
+                    if activities == "" {
+                        activities = "none"
+                    }
+                                        
+                    let confidence =
+                        (motion!.confidence == .low ? "low" :
+                        motion!.confidence == .medium ? "medium" :
+                        motion!.confidence == .high ? "high" :
+                        "unknown")
+                    
+                    self.activityUIDelegate?.updateActivityUI(msg: activities.capitalized)
+                    
+                    requestURL("activities=\(activities)&confidence=\(confidence)")
+                }
             }
         }
     }
@@ -234,6 +292,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    // We can update the update intervals on-the-fly
     func updateMotionInterval(_ interval: Double) {
         requestURL("updateInterval=\(interval)")
         motionManager.gyroUpdateInterval = interval

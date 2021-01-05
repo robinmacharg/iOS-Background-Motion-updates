@@ -9,6 +9,10 @@ import UIKit
 import CoreMotion
 import FLEX
 
+protocol ActivityUIDelegate {
+    func updateActivityUI(msg: String)
+}
+
 class ViewController: UIViewController {
 
     @IBOutlet weak var label: UILabel!
@@ -17,43 +21,7 @@ class ViewController: UIViewController {
      
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // That warm feeling
-        label.text = "App Running"
-        
-        // Activity
-        
-        if  CMMotionActivityManager.isActivityAvailable() {
-            appDelegate().motionActivityManager.startActivityUpdates(to: OperationQueue.main) { (motion) in
-                if motion != nil {
-                    // It's possible to have > 1 value, e.g. automotive AND stationary (e.g. at lights)
-                    var activities = [
-                        motion!.unknown ? "unknown" : nil,
-                        motion!.stationary ? "stationary" : nil,
-                        motion!.walking ? "walking" : nil,
-                        motion!.running ? "running" : nil,
-                        motion!.cycling ? "cycling" : nil,
-                        motion!.automotive ? "driving" : nil
-                    ].compactMap({$0}).joined(separator: ",")
-                    
-                    if activities == "" {
-                        activities = "none"
-                    }
-                                        
-                    let confidence =
-                        (motion!.confidence == .low ? "low" :
-                        motion!.confidence == .medium ? "medium" :
-                        motion!.confidence == .high ? "high" :
-                        "unknown")
-                    
-                    UI() {
-                        self.label.text = activities.capitalized
-                    }
-                    
-                    requestURL("activities=\(activities)&confidence=\(confidence)")
-                }
-            }
-        }
+        appDelegate().activityUIDelegate = self
     }
     
     // Start the FLEX in-app debugger
@@ -73,6 +41,22 @@ class ViewController: UIViewController {
     
     @IBAction func changeInterval10s(_ sender: Any) {
         appDelegate().updateMotionInterval(10)
+    }
+    
+    @IBAction func startLocationUpdates(_ sender: Any) {
+        appDelegate().startUpdates()
+    }
+    
+    @IBAction func stopLocationUpdates(_ sender: Any) {
+        appDelegate().stopUpdates()
+    }
+}
+
+extension ViewController: ActivityUIDelegate {
+    func updateActivityUI(msg: String) {
+        UI() {
+            self.label.text = msg.capitalized
+        }
     }
 }
 
