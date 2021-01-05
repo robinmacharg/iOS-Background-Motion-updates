@@ -50,6 +50,9 @@ import AVKit
  * CONSTANTS
  */
 
+// Should we enable updates in the background?
+let BACKGROUND_UPDATES = true
+
 // Should we send diagnostic HTTP requests?
 let REQUESTS_ENABLED = true
 
@@ -147,8 +150,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         locationManager.requestAlwaysAuthorization()
 
         // Disable this next line to turn off ALL background location/motion updates.
-        locationManager.allowsBackgroundLocationUpdates = true
-
+        locationManager.allowsBackgroundLocationUpdates = BACKGROUND_UPDATES
+        
         // Crank down the GPS accuracy to prevent (frequent) location updates
         // Disable the next two lines to see location updates.
         // GPS energy usage is visible in the Energy Log Instrument
