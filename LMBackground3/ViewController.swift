@@ -9,14 +9,17 @@ import UIKit
 import CoreMotion
 import FLEX
 
+// Functions to let the user know what's going on.
 protocol ActivityUIDelegate {
     func updateActivityUI(msg: String)
+    func updateIntervalUI(interval: Double)
 }
 
 class ViewController: UIViewController {
 
     @IBOutlet weak var label: UILabel!
-
+    @IBOutlet weak var updateIntervalLabel: UILabel!
+    
     let motionActivityManager = CMMotionActivityManager()
      
     override func viewDidLoad() {
@@ -52,10 +55,18 @@ class ViewController: UIViewController {
     }
 }
 
+// MARK: - <ActivityUIDelegate>
+
 extension ViewController: ActivityUIDelegate {
     func updateActivityUI(msg: String) {
         UI() {
             self.label.text = msg.capitalized
+        }
+    }
+    
+    func updateIntervalUI(interval: Double) {
+        UI() {
+            self.updateIntervalLabel.text = "Update Interval: \(interval)"
         }
     }
 }

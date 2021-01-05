@@ -133,6 +133,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         setupLocationManager()
         setupMotionManager(updateInterval: UPDATE_INTERVAL)
+        // Other sensor types are not configurable
+
+        // A notification-based alternative to the usual will/did app/scene delegate methods
         setupLifecycleNotifications()
         
         startUpdates()
@@ -316,6 +319,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         motionManager.accelerometerUpdateInterval = interval
         motionManager.deviceMotionUpdateInterval = interval
         motionManager.magnetometerUpdateInterval = interval
+        activityUIDelegate?.updateIntervalUI(interval: interval)
     }
     
     /**
