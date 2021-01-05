@@ -35,6 +35,12 @@ import AVKit
  
  The FLEX in-app debugger is available for e.g. untethered log viewing.
  
+ Useful background:
+ 
+ https://stackoverflow.com/questions/20083032/coremotion-updates-in-background-state
+ https://stackoverflow.com/questions/19216169/cmmotionactivitymanager-receiving-motion-activity-updates-while-app-is-suspend?rq=1
+ https://stackoverflow.com/questions/19042894/periodic-ios-background-location-updates/19085518#19085518
+ https://stackoverflow.com/questions/20766139/iphone-collecting-coremotion-data-in-the-background-longer-than-10-mins
  */
 
 /**
@@ -115,6 +121,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         setupLocationManager()
         setupMotionManager(updateInterval: UPDATE_INTERVAL)
+        setupLifecycleNotifications()
         
         requestURL("DID_FINISH_LAUNCHING")
         
@@ -189,6 +196,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    // Add listeners for lifecycle notifications.
+    // In a normal app these would typically be in scene or app delegate lifecycle methods, e.g. sceneDidBecomeActive()
+    // Doing it like this shows how it could work for a third-party library.
+    private func setupLifecycleNotifications() {
+        
+        let notificationCenter = NotificationCenter.default
+        
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(appWillEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil)
+
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(appDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil)
+
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(appWillResignActive),
+            name: UIApplication.willResignActiveNotification,
+            object: nil)
+        
+        notificationCenter.addObserver(
+            self,
+            selector: #selector(appDidBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil)
+    }
+    
     private func playSound() {
         if PLAY_SOUND {
             AudioServicesPlaySystemSound(1103)
@@ -201,6 +240,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         motionManager.accelerometerUpdateInterval = interval
         motionManager.deviceMotionUpdateInterval = interval
         motionManager.magnetometerUpdateInterval = interval
+    }
+    
+    /**
+     * NOTIFICATION HANDLERS
+     */
+    
+    @objc private func appWillEnterForeground() {
+        requestURL("WILL_ENTER_FOREGROUND")
+    }
+    
+    @objc private func appDidEnterBackground() {
+        requestURL("DID_ENTER_BACKGROUND")
+    }
+    
+    @objc private func appWillResignActive() {
+        appDelegate().updateMotionInterval(10)
+        requestURL("RESIGN_ACTIVE")
+    }
+    
+    @objc private func appDidBecomeActive() {
+        requestURL("DID_BECOME_ACTIVE")
     }
 }
 

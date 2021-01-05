@@ -14,22 +14,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let _ = (scene as? UIWindowScene) else { return }
     }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        requestURL("DID_BECOME_ACTIVE")
-    }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-        appDelegate().updateMotionInterval(10)
-        requestURL("RESIGN_ACTIVE")
-    }
-
-    func sceneWillEnterForeground(_ scene: UIScene) {
-        requestURL("WILL_ENTER_FOREGROUND")
-    }
-
-    func sceneDidEnterBackground(_ scene: UIScene) {
-        requestURL("DID_ENTER_BACKGROUND")
-    }
 }
 
