@@ -121,6 +121,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let locationManager = CLLocationManager()
     let motionManager = CMMotionManager()
     let motionActivityManager = CMMotionActivityManager()
+    let altimeter = CMAltimeter()
     var activityUIDelegate: ActivityUIDelegate?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -163,6 +164,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func stopUpdates() {
         locationManager.stopUpdatingLocation()
+        altimeter.stopRelativeAltitudeUpdates()
         motionManager.stopGyroUpdates()
         motionManager.stopMagnetometerUpdates()
         motionManager.stopAccelerometerUpdates()
@@ -174,6 +176,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func startUpdates() {
         stopUpdates() // Ensure we don't register twice
         startLocationUpdates()
+        startAltimeterUpdates()
         startMotionUpdates()
         startActivityUpdates()
     }
@@ -181,6 +184,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func startLocationUpdates() {
         locationManager.startUpdatingLocation()
         locationManager.startUpdatingHeading()
+    }
+    
+    private func startAltimeterUpdates() {
+        if CMAltimeter.isRelativeAltitudeAvailable() {
+            altimeter.startRelativeAltitudeUpdates(to: OperationQueue.main) { (data, error) in
+                log(data as Any)
+                requestURL("altimeter&altitude=\(data?.relativeAltitude ?? 0)&pressure=\(data?.pressure ?? 0)")
+                self.playSound()
+            }
+        }
     }
     
     private func startMotionUpdates() {
