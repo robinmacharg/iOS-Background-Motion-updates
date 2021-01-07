@@ -13,6 +13,7 @@ import AVKit
 /*
 
  Proof of Concept iOS app demonstrating persistent background Core Motion updates.
+ Runs on a real device, not the simulator.
  
  Uses Cocoapods:
  
@@ -44,6 +45,13 @@ import AVKit
  - https://stackoverflow.com/questions/19042894/periodic-ios-background-location-updates/19085518#19085518
  - https://stackoverflow.com/questions/20766139/iphone-collecting-coremotion-data-in-the-background-longer-than-10-mins
  
+ Beacon ranging code based on Apple's self-contained beacon demo:
+ 
+ https://developer.apple.com/documentation/corelocation/ranging_for_beacons
+ 
+ Build and run on a separate device, adjust UUIDs appropriately, start running as a beacon  and beacon
+ ranging will work.
+  
  */
 
 /**
@@ -67,6 +75,12 @@ let UPDATE_INTERVAL = 10.0
  
 // Should we play a sound when a background motion event is received?
 let PLAY_SOUND = true
+
+// UUIDs of iBeacon's to range for
+let BEACON_IDS = [
+    // This is the default from Apple's demo
+    "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0"
+]
 
 /**
  * GLOBAL HELPER FUNCTIONS
@@ -126,6 +140,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let motionActivityManager = CMMotionActivityManager()
     let altimeter = CMAltimeter()
     var activityUIDelegate: ActivityUIDelegate?
+    var beaconConstraints = [CLBeaconIdentityConstraint: [CLBeacon]]()
+    var beaconRegions = [CLBeaconRegion]()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
@@ -133,6 +149,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         setupLocationManager()
         setupMotionManager(updateInterval: UPDATE_INTERVAL)
+        setupBeacons()
         // Other sensor types are not configurable
 
         // A notification-based alternative to the usual will/did app/scene delegate methods
@@ -168,6 +185,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         updateMotionInterval(updateInterval)
     }
     
+    private func setupBeacons() {
+        for beaconID in BEACON_IDS {
+            if let uuid = UUID(uuidString: beaconID) {
+                let constraint = CLBeaconIdentityConstraint(uuid: uuid)
+                self.beaconConstraints[constraint] = []
+                let beaconRegion = CLBeaconRegion(
+                    beaconIdentityConstraint: constraint,
+                    identifier: uuid.uuidString)
+                beaconRegions.append(beaconRegion)
+            }
+        }
+    }
+    
     func stopUpdates() {
         locationManager.stopUpdatingLocation()
         altimeter.stopRelativeAltitudeUpdates()
@@ -176,6 +206,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         motionManager.stopAccelerometerUpdates()
         motionManager.stopDeviceMotionUpdates()
         motionActivityManager.stopActivityUpdates()
+        
+        for region in locationManager.monitoredRegions {
+            locationManager.stopMonitoring(for: region)
+        }
+        
+        for constraint in beaconConstraints.keys {
+            locationManager.stopRangingBeacons(satisfying: constraint)
+        }
+        
         requestURL("LOCATION_UPDATES_STOPPED")
     }
     
@@ -185,6 +224,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         startAltimeterUpdates()
         startMotionUpdates()
         startActivityUpdates()
+        startBeaconUpdates()
     }
     
     private func startLocationUpdates() {
@@ -274,6 +314,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    private func startBeaconUpdates() {
+        for beaconRegion in beaconRegions {
+            self.locationManager.startMonitoring(for: beaconRegion)
+            requestURL("MONITORING_BEACON=\(beaconRegion.beaconIdentityConstraint.uuid.uuidString)")
+        }
+    }
+    
     // Add listeners for lifecycle notifications.
     // In a normal app these would typically be in scene or app delegate lifecycle methods, e.g. sceneDidBecomeActive()
     // Doing it like this shows how it could work for a third-party library.
@@ -312,7 +359,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    // We can update the update intervals on-the-fly
+    // We can change the update intervals on-the-fly
     func updateMotionInterval(_ interval: Double) {
         requestURL("updateInterval=\(interval)")
         motionManager.gyroUpdateInterval = interval
@@ -365,5 +412,34 @@ extension AppDelegate: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
         requestURL("didUpdateHeading")
+    }
+    
+    // Beacon ranging
+    
+    func locationManager(_ manager: CLLocationManager, didDetermineState state: CLRegionState, for region: CLRegion) {
+        let beaconRegion = region as? CLBeaconRegion
+        if state == .inside {
+            // Start ranging when inside a region.
+            manager.startRangingBeacons(satisfying: beaconRegion!.beaconIdentityConstraint)
+        } else {
+            // Stop ranging when not inside a region.
+            manager.stopRangingBeacons(satisfying: beaconRegion!.beaconIdentityConstraint)
+        }
+    }
+    
+    func locationManager(
+        _ manager: CLLocationManager,
+        didRange beacons: [CLBeacon],
+        satisfying beaconConstraint: CLBeaconIdentityConstraint)
+    {
+        for beacon in beacons {
+            let proximity =
+                beacon.proximity == CLProximity.unknown ? "unknown" :
+                beacon.proximity == CLProximity.immediate ? "immediate" :
+                beacon.proximity == CLProximity.near ? "near" :
+                beacon.proximity == CLProximity.far ? "far" :
+                "none"
+            requestURL("didRangeBeacon=\(beacon.uuid.uuidString)&range=\(proximity)")
+        }
     }
 }
